@@ -16,6 +16,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Third Party settings
+
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ]
+}
+
 
 # Application definition
 
