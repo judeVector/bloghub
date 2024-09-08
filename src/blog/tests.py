@@ -1,6 +1,11 @@
 from django.test import TestCase
+from django.urls import reverse
 from django.contrib.auth import get_user_model
+
+from rest_framework import status
+
 from .models import Post, Category
+
 
 User = get_user_model()
 
@@ -59,3 +64,12 @@ class PostModelTest(TestCase):
             content="Another Post content",
         )
         self.assertEqual(post3.slug, "post-title-2")
+
+
+class HomepageViewTest(TestCase):
+
+    def test_homepage_view(self):
+        response = self.client.get(reverse("blog:homepage"))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTemplateUsed(response, "blog/index.html")
