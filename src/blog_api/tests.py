@@ -16,8 +16,16 @@ class PostTests(APITestCase):
             username="testuser1", password="password123"
         )
 
-        user = User.objects.get(username="testuser1")
-        self.client.force_authenticate(user=user)
+        self.post = Post.objects.create(
+            title="Exploring Django Models",
+            author=self.user,
+            excerpt="Initial excerpt",
+            content="Initial content",
+            status="published",
+        )
+
+        self.client.force_authenticate(user=self.user)
+        print(self.post)
 
     def test_view_post(self):
         url = reverse("blog_api:listcreate")
@@ -28,10 +36,23 @@ class PostTests(APITestCase):
         url = reverse("blog_api:listcreate")
         payload = {
             "title": "Exploring Django Models",
-            "author": 1,
+            "author": self.user.id,
             "excerpt": "This is a second test to see whether it will slug",
-            "content": "This content is suppose to be sluggified in 2 number  ",
+            "content": "This content is supposed to be sluggified in 2 number",
         }
 
-        response = self.client.post(url, data=payload)
+        response = self.client.post(url, data=payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_update_post(self):
+        url = reverse("blog_api:detailcreate", kwargs={"pk": self.post.id})
+        payload = {
+            "title": "Updated Django Models",
+            "author": self.user.id,
+            "excerpt": "This is an updated test to see whether it will slug",
+            "content": "This content is going to be updated",
+            "status": "published",
+        }
+
+        response = self.client.put(url, payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
