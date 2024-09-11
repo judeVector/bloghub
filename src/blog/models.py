@@ -1,9 +1,7 @@
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.utils import timezone
 from django.utils.text import slugify
-
-User = get_user_model()
 
 
 class Category(models.Model):
@@ -34,7 +32,11 @@ class Post(models.Model):
     slug = models.SlugField(max_length=250, unique=True, blank=True)
     published = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="blog_posts"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="blog_posts",
+        null=True,
+        blank=True,
     )
     status = models.CharField(max_length=10, choices=options, default="published")
 
