@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import generics, viewsets
+from rest_framework.views import APIView
 from blog.models import Post
 
 from rest_framework.permissions import (
@@ -74,3 +75,8 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Post.objects.all()
+
+
+class UserAvatarUplaod(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormPaser]
