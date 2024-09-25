@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from rest_framework import generics, viewsets
+from rest_framework import generics, viewsets, status
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
 from blog.models import Post
 
 from rest_framework.permissions import (
@@ -77,6 +78,16 @@ class PostViewSet(viewsets.ModelViewSet):
         return Post.objects.all()
 
 
-class UserAvatarUplaod(APIView):
+class PostUpload(APIView):
     permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser, FormPaser]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, format=None):
+        print(request.data)
+        print(request)
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(author=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
